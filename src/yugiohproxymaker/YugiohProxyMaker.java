@@ -44,13 +44,14 @@ import org.jsoup.select.Elements;
  * @author Alan
  */
 public class YugiohProxyMaker {
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
         
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(YugiohProxyMaker.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+//        try {
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+//            Logger.getLogger(YugiohProxyMaker.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 //        String passcode = "45819647";
 //        passcode = "41420027";
 //        String wrong = "3482453823458";
@@ -58,10 +59,8 @@ public class YugiohProxyMaker {
 //        System.out.println(fetch.fetch(passcode.trim()));
 //        createGUI();
 //        pdfTest();
-        testGenerateDeck();
-
-//        System.out.println(CardFetcher.passcodeCorrector("35699"));
-    }
+//        testGenerateDeck();
+//    }
     
     public static void testGenerateDeck(){
         File file = new File("F:\\! Spyrals (1).ydk");
