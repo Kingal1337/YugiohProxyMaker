@@ -35,23 +35,30 @@ public class Main {
     
     private static final String DEFAULT_FILE_NAME = "Generated Deck";
     
-    public static void main(String[] args) {
-        //DeckListLocation [DestinationLocation] [Colored MarginLeft MarginTop MarginRight MarginBottom]
-        if(args.length == 1){//defaults margin settings [deckListLocation]
+    public static void main(String[] args) {        
+        /*
+        // <desk_list_location>
+        // <desk_list_location> <destination>
+        // <desk_list_location> <use_image> <colored>
+        // <desk_list_location> <destination> <use_image> <colored> [--left=<px>] [--top=<px>] [--right=<px>] [--bottom=<px>]
+        */
+        
+        if(args.length == 1){//desk_list_location
             File deckListFile = new File(args[0]);
             if(!deckListFile.exists()){
                 System.out.println("File doesn't exist");
                 System.exit(0);
             }
             File dest = getDefaultFileName(DEFAULT_FILE_NAME, 0);
+            System.out.println(dest);
             boolean overwrite = overwrite(dest);
             if(overwrite){
                 System.out.println("Generating...");
-                generate(deckListFile, dest, false, marginLeft, marginTop, marginRight, marginBottom);
-                System.out.println("Finished, File Location : "+dest.getPath());
+                generate(deckListFile, dest, false, false, marginLeft, marginTop, marginRight, marginBottom);
+                System.out.println("Finished, File Location : "+dest.getAbsolutePath());
             }
         }
-        else if(args.length == 2){//default margin settings [deskListLocation, destinationLocation]
+        else if(args.length == 2){//desk_list_location destination
             File deckListFile = new File(args[0]);
             if(!deckListFile.exists()){
                 System.out.println("File doesn't exist");
@@ -61,32 +68,70 @@ public class Main {
             boolean overwrite = overwrite(destinationFile);
             if(overwrite){
                 System.out.println("Generating...");
-                generate(deckListFile, destinationFile, false, marginLeft, marginTop, marginRight, marginBottom);
-                System.out.println("Finished, File Location : "+destinationFile.getPath());
+                generate(deckListFile, destinationFile, false, false, marginLeft, marginTop, marginRight, marginBottom);
+                System.out.println("Finished, File Location : "+destinationFile.getAbsolutePath());
             }
         }
-        else if (args.length == 7){//[deskListLocation, destinationLocation, colored, left, top, right, bottom]
+        else if(args.length == 3){//desk_list_location <use_image> <colored>
             File deckListFile = new File(args[0]);
             if(!deckListFile.exists()){
                 System.out.println("File doesn't exist");
                 System.exit(0);
             }
-            File destinationFile = new File(touchUpFileName(args[1]));
+            boolean useImage = getBoolean(args[1], false);
             boolean colored = getBoolean(args[2], false);
-            float left = getFloat(args[3], marginLeft);
-            float top = getFloat(args[4], marginTop);
-            float right = getFloat(args[5], marginRight);
-            float bottom = getFloat(args[6], marginBottom);
             
+            File dest = getDefaultFileName(DEFAULT_FILE_NAME, 0);
+            boolean overwrite = overwrite(dest);
+            if(overwrite){
+                System.out.println("Generating...");
+                generate(deckListFile, dest, useImage, colored, marginLeft, marginTop, marginRight, marginBottom);
+                System.out.println("Finished, File Location : "+dest.getAbsolutePath());
+            }
+        }
+        else if(args.length >= 4 && args.length <= 8){//<desk_list_location> <destination> <use_image> <colored> [--left=<px>] [--top=<px>] [--right=<px>] [--bottom=<px>]
+            File deckListFile = new File(args[0]);
+            if(!deckListFile.exists()){
+                System.out.println("File doesn't exist");
+                System.exit(0);
+            }
+            
+            boolean useImage = getBoolean(args[2], false);
+            boolean colored = getBoolean(args[3], false);
+            
+            float left = marginLeft;
+            float top = marginTop;
+            float right = marginRight;
+            float bottom = marginBottom;
+            
+            for(int i=4;i<args.length;i++){
+                String param = args[i];
+                if(param.startsWith("--")){
+                    if(param.startsWith("left", 2)){
+                        left = getFloat(param.substring(param.indexOf("=") + 1), marginLeft);
+                    }
+                    else if(param.startsWith("top", 2)){
+                        top = getFloat(param.substring(param.indexOf("=") + 1), marginTop);
+                    }
+                    else if(param.startsWith("right", 2)){
+                        right = getFloat(param.substring(param.indexOf("=") + 1), marginRight);
+                    }
+                    else if(param.startsWith("bottom", 2)){
+                        bottom = getFloat(param.substring(param.indexOf("=") + 1), marginBottom);
+                    }
+                }
+            }
+            
+            File destinationFile = new File(touchUpFileName(args[1]));
             boolean overwrite = overwrite(destinationFile);
             if(overwrite){
                 System.out.println("Generating...");
-                generate(deckListFile, destinationFile, colored, left, top, right, bottom);
-                System.out.println("Finished, File Location : "+destinationFile.getPath());
+                generate(deckListFile, destinationFile, useImage, colored, left, top, right, bottom);
+                System.out.println("Finished, File Location : "+destinationFile.getAbsolutePath());
             }
         }
         else{
-            System.out.println("Nothing Generated, Requires DeckListLocation");
+            System.out.println("Invalid Command");
         }
     }
     
@@ -150,6 +195,7 @@ public class Main {
      * 
      * @param deckList
      * @param destination
+     * @param useImage
      * @param colored
      * @param left
      * @param top
@@ -157,7 +203,7 @@ public class Main {
      * @param bottom
      * @return  true if the deck successfully generated, false if an error occured
      */
-    private static boolean generate(File deckList, File destination, boolean colored, float left, float top, float right, float bottom){
+    private static boolean generate(File deckList, File destination, boolean useImage, boolean colored, float left, float top, float right, float bottom){
         if(!deckList.exists()){
             return false;
         }
@@ -173,7 +219,7 @@ public class Main {
         
             CardCreator creator = new CardCreator(document, cb);
             for(Card card : cards){
-                creator.renderCard(card, !colored);
+                creator.renderCard(card, useImage, !colored);
             }
             document.close();
             return true;
@@ -210,9 +256,11 @@ public class Main {
         CardFetcher cardFetch = new CardFetcher();
         ArrayList<Card> cards = new ArrayList<>();
         for(String id : cardIds){
-            Card card = cardFetch.fetch(id);
-            if(card != null){
-                cards.add(card);
+            if(!id.startsWith("!") && !id.startsWith(("#"))){
+                Card card = cardFetch.fetch(id);
+                if(card != null){
+                    cards.add(card);
+                }
             }
         }
         return cards;

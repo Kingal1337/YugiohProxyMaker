@@ -82,7 +82,7 @@ public class YugiohProxyMaker {
         
             CardCreator creator = new CardCreator(document, cb);
             for(Card card : cards){
-                creator.renderCard(card, true);
+                creator.renderCard(card, false, true);
             }
             document.close();
         } catch (FileNotFoundException | DocumentException ex) {}

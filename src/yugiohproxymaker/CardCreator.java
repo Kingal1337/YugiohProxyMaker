@@ -5,11 +5,13 @@
  */
 package yugiohproxymaker;
 
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
@@ -22,12 +24,23 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfShading;
 import com.itextpdf.text.pdf.PdfShadingPattern;
 import com.itextpdf.text.pdf.PdfWriter;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageFilter;
+import java.awt.image.ImageProducer;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.paint.Color;
+import javax.imageio.ImageIO;
+import javax.swing.GrayFilter;
 
 /**
  *
@@ -75,7 +88,7 @@ public class CardCreator {
         
     }
     
-    public void renderCard(Card card, boolean blackAndWhite){
+    public void renderCard(Card card, boolean useImage, boolean blackAndWhite){
         font = new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.NORMAL);
                 
         if(curCol == maxColsPerPage){
@@ -92,7 +105,12 @@ public class CardCreator {
             doc.newPage();
         }
         
-        drawCard(currentX, currentY, card, blackAndWhite);
+        if(useImage){
+            drawCardImage(currentX, currentY, card, blackAndWhite);
+        }
+        else{
+            drawCard(currentX, currentY, card, blackAndWhite);
+        }
         currentX += cardWidth + gap;
         curCol += 1;
     }
@@ -141,6 +159,44 @@ public class CardCreator {
 //        document.newPage();
 //        drawCard(30,30, card10);//topleft
 //    }
+    
+    public static BufferedImage toBufferedImage(java.awt.Image img) {
+        if (img instanceof BufferedImage) {
+            return (BufferedImage) img;
+        }
+
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+
+        return bimage;
+    }
+    
+    private void drawCardImage(float x, float y, Card card, boolean blackAndWhite){
+        y = doc.getPageSize().getHeight() - cardHeight - y;
+        
+        BufferedImage bufferedImage = card.getImage();
+        if(blackAndWhite){
+            ImageFilter filter = new GrayFilter(true, 25);  
+            ImageProducer producer = new FilteredImageSource(bufferedImage.getSource(), filter);  
+            bufferedImage = toBufferedImage(Toolkit.getDefaultToolkit().createImage(producer));  
+        }
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "png", baos);
+            Image iTextImage = Image.getInstance(baos.toByteArray());
+            iTextImage.scaleAbsolute(cardWidth, cardHeight);
+            iTextImage.setAbsolutePosition(x, y);
+            doc.add(iTextImage);
+        } catch (IOException | BadElementException ex) {
+            Logger.getLogger(CardCreator.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DocumentException ex) {
+            Logger.getLogger(CardCreator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     private void drawCard(float x, float y, Card card, boolean blackAndWhite){
         y = doc.getPageSize().getHeight() - y;

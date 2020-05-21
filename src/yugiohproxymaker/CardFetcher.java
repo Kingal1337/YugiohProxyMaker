@@ -25,15 +25,15 @@ import org.jsoup.select.Elements;
 public class CardFetcher {
     private final String BASE_URL = "https://yugioh.fandom.com/wiki/";
     
+    //add different image urls
+    
     private final String SEARCH_URL = "https://yugioh.fandom.com/wiki/Special:Search?query=";
     
     private Document currentDoc;
     
     private HashMap<String, String> cardTableDetails;
     
-    public CardFetcher(){
-        
-    }
+    public CardFetcher(){}
     
     public Card fetch(String passcode){
         passcode = passcodeCorrector(passcode);
