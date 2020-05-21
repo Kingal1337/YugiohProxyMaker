@@ -68,9 +68,9 @@ You can generate 3 types of proxies
 **Options**
 ```
 	--left=<px>             the left margin of the pdf in pixels [default: 36]
-	--top=<px>              the top margin of the pdf in pixels [default: 36]
+	--top=<px>              the top margin of the pdf in pixels [default: 50]
 	--right=<px>            the right margin of the pdf in pixels [default: 36]
-	--bottom=<px>           the bottom margin of the pdf in pixels [default: 36]
+	--bottom=<px>           the bottom margin of the pdf in pixels [default: 50]
 ```
 
 ## Examples
