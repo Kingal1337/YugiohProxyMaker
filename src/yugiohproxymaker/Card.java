@@ -61,7 +61,7 @@ public class Card {
     
     /**
      * contains an array of 8 values
-     * [topleft, topcenter, topright, midleft, mid right, bottomleft, bottomcenter, bottomright
+     * [topleft, topcenter, topright, midleft, mid right, bottomleft, bottomcenter, bottomright]
      */
     private boolean[] linkArrows;
     

@@ -44,11 +44,13 @@ public class CardFetcher {
         }
         
         cardTableDetails = getTableDetails();
+        if(cardTableDetails == null){
+            return null;
+        }
         
         Card card = new Card();
         
         String name = getName();
-        String imageUrl = getImageUrl();
         boolean englishVariant = isInEnglish();
         String[] englishDescription = getEnglishDescription();
         
@@ -119,6 +121,9 @@ public class CardFetcher {
         HashMap<String, String> cardDetails = new HashMap<>();
         
         Elements cardTable = currentDoc.getElementsByClass("cardtable");
+        if(cardTable.isEmpty()){
+            return null;
+        }
         Elements elements = cardTable.get(0).getElementsByClass("cardtablerowheader");
         for(int i=0;i<elements.size();i++){
             Element e = elements.get(i);
@@ -351,6 +356,11 @@ public class CardFetcher {
         return null;
     }
     
+    /**
+     * //converts all of the <br> and <p> with new lines (\\n)
+     * @param html  the html that needs to be parsed
+     * @return  a fully parse html
+     */
     public static String br2nl(String html) {
         if (html == null) {
             return html;
@@ -381,6 +391,10 @@ public class CardFetcher {
         return Jsoup.clean(s, "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
     }
     
+    /**
+     * Gets the location of where the card image is located on the web
+     * @return  returns an image url
+     */
     private String getImageUrl(){
         if(!doesCardExist()){
             return null;

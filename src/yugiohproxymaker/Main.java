@@ -135,6 +135,12 @@ public class Main {
         }
     }
     
+    /**
+     * Attempts to convert a string into a boolean value, if it fails it will return the provided default value
+     * @param boolString  the string that will be converted to a boolean
+     * @param defaultValue  the default value that will be return if the conversion fails
+     * @return  a converted boolean value or the default value
+     */
     private static boolean getBoolean(String boolString, boolean defaultValue){
         try{
             boolean f = Boolean.parseBoolean(boolString);
@@ -144,6 +150,12 @@ public class Main {
         }
     }
     
+    /**
+     * Attempts to convert a string into a float value, if it fails it will return the provided default value
+     * @param floatString  the string that will be converted to a float
+     * @param defaultValue  the default value that will be return if the conversion fails
+     * @return  a converted float value or the default value
+     */
     private static float getFloat(String floatString, float defaultValue){
         try{
             float f = Float.parseFloat(floatString);
@@ -154,8 +166,8 @@ public class Main {
     }
     
     /**
-     * Adds an extension to the end of the filename
-     * @return 
+     * Adds that .pdf extension to the end of the filename, even if the filename already contains an extension
+     * @return  a filename that will always have .pdf at the end of it
      */
     private static String touchUpFileName(String fileName){
         if(fileName.lastIndexOf(".pdf") == -1){
@@ -164,6 +176,12 @@ public class Main {
         return fileName;
     }
     
+    /**
+     * 
+     * @param defaultFileName
+     * @param number
+     * @return 
+     */
     private static File getDefaultFileName(String defaultFileName, int number){
         String num = number != 0 ? "("+number+")" : "";
         File file = new File(defaultFileName + num + ".pdf");
@@ -192,15 +210,15 @@ public class Main {
     }
     
     /**
-     * 
-     * @param deckList
-     * @param destination
-     * @param useImage
-     * @param colored
-     * @param left
-     * @param top
-     * @param right
-     * @param bottom
+     * Generates a decklist based on a list of parameters
+     * @param deckList  the decklist location
+     * @param destination  the location in which the pdf will be saved to
+     * @param useImage  a boolean value which will determine if the pdf will contain minimalistic cards or the full image
+     * @param colored  whether or not the cards should be colored 
+     * @param left  the left margin of the pdf page
+     * @param top  the top margin of the pdf page
+     * @param right  the right margin of the pdf page
+     * @param bottom  the bottom margin of the pdf page
      * @return  true if the deck successfully generated, false if an error occured
      */
     private static boolean generate(File deckList, File destination, boolean useImage, boolean colored, float left, float top, float right, float bottom){
@@ -228,6 +246,11 @@ public class Main {
         return false;
     }
     
+    /**
+     * Parses out all of the comments from a ydk file and only gets the card id's
+     * @param file  the ydk file
+     * @return  an array of strings that should only contain card id's
+     */
     private static ArrayList<String> getCardIds(File file){
         if(file == null){
             return null;
@@ -239,7 +262,11 @@ public class Main {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while((line = reader.readLine()) != null){
-                if(!line.startsWith("#")){
+                line = line.trim();
+                if(line.isEmpty()){
+                    continue;
+                }
+                if(!line.startsWith("#") || !line.startsWith("!")){
                     cardIds.add(line);
                 }
             }
@@ -252,6 +279,11 @@ public class Main {
         return cardIds;
     }
     
+    /**
+     * Creates an array of card objects from card id's
+     * @param cardIds  a list of card id's
+     * @return  an array of cards
+     */
     private static ArrayList<Card> getCards(ArrayList<String> cardIds){
         CardFetcher cardFetch = new CardFetcher();
         ArrayList<Card> cards = new ArrayList<>();
