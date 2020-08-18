@@ -41,20 +41,20 @@ You can generate 3 types of proxies
 1) Download the lastest version of the [Yugioh Proxy Maker](https://github.com/Kingal1337/YugiohProxyMaker/releases)
 2) Open the command prompt
 3) Navigate to where you have downloaded the .jar file in the command promt
-4) Type `java -jar Yugioh-Proxy-Maker-1.1.0.jar <desk_list_location>` to generate a Simple Deck (Be sure to replace `<deck_list_location>` with the .ydk file located on your computer)
+4) Type `java -jar Yugioh-Proxy-Maker-1.2.0.jar <desk_list_location>` to generate a Simple Deck (Be sure to replace `<deck_list_location>` with the .ydk file located on your computer)
 5) The pdf that was generated should be located in the folder where you downloaded the .jar file
 6) Print the PDF.
 ## The Command
 
 **Usage**
 
-`java -jar Yugioh-Proxy-Maker-1.1.0.jar <desk_list_location>`
+`java -jar Yugioh-Proxy-Maker-1.2.0.jar <desk_list_location>`
 <br>
-`java -jar Yugioh-Proxy-Maker-1.1.0.jar <desk_list_location> <destination>`
+`java -jar Yugioh-Proxy-Maker-1.2.0.jar <desk_list_location> <destination>`
 <br>
-`java -jar Yugioh-Proxy-Maker-1.1.0.jar <desk_list_location> <use_image> <colored>`
+`java -jar Yugioh-Proxy-Maker-1.2.0.jar <desk_list_location> <use_image> <colored>`
 <br>
-`java -jar Yugioh-Proxy-Maker-1.1.0.jar <desk_list_location> <destination> <use_image> <colored> [--left=<px>] [--top=<px>] [--right=<px>] [--bottom=<px>]`
+`java -jar Yugioh-Proxy-Maker-1.2.0.jar <desk_list_location> <destination> <use_image> <colored> [--left=<px>] [--top=<px>] [--right=<px>] [--bottom=<px>]`
 
 **Arguments**
 ```
@@ -76,9 +76,9 @@ You can generate 3 types of proxies
 ## Examples
 
 - **Simple Deck** - This will generate a minimalistic deck with just text and will be saved on the desktop
-  - `java -jar Yugioh-Proxy-Maker-1.1.0.jar "C:/Users/<NAME>/Desktop/Decklist.ydk"`
+  - `java -jar Yugioh-Proxy-Maker-1.2.0.jar "C:/Users/<NAME>/Desktop/Decklist.ydk"`
 - **Deck with Original Images** - This will generate a deck with the image of the card pulled from the Yugioh Fandom
-  -  `java -jar Yugioh-Proxy-Maker-1.1.0.jar "C:/Users/<NAME>/Desktop/Decklist.ydk" true true`     
+  -  `java -jar Yugioh-Proxy-Maker-1.2.0.jar "C:/Users/<NAME>/Desktop/Decklist.ydk" true true`     
 
 ## Printing the Deck
 In order to print with the correct dimensions of a Yu-Gi-Oh card, set the scale of the print to 100% 
