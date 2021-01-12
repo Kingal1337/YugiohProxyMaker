@@ -17,6 +17,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
+import yugiohproxymaker.Card.CardType;
 
 /**
  *
@@ -71,7 +72,7 @@ public class CardFetcher {
         card.setAttack(getAttack());
         card.setDefense(getDefOrLink());
         card.setMonsterTypes(getTypes());
-        card.setMainMonsterType(getMainType(card.getMonsterTypes()));
+        card.setMainMonsterType(getMainType(card.getMonsterTypes(), cardType));
         card.setPendulumScale(getPendulumScale());
         
         return card;
@@ -206,7 +207,7 @@ public class CardFetcher {
         return 0;
     }
     
-    private Card.MonsterType getMainType(String[] types){
+    private Card.MonsterType getMainType(String[] types, CardType cardType){
         if(types == null){
             return null;
         }
@@ -221,6 +222,9 @@ public class CardFetcher {
                     return Card.MonsterType.values()[j];
                 }
             }
+        }
+        if(cardType.equals(CardType.MONSTER)){//if the cardtype is a monster and it doesnt show the type of monster, assume it is an effect monster
+            return Card.MonsterType.EFFECT;
         }
         return null;
     }
