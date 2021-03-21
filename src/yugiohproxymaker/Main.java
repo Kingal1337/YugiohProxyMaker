@@ -35,7 +35,7 @@ public class Main {
     
     private static final String DEFAULT_FILE_NAME = "Generated Deck";
     
-    public static void main(String[] args) {        
+    public static void main(String[] args) {
         /*
         // <desk_list_location>
         // <desk_list_location> <destination>
@@ -285,13 +285,31 @@ public class Main {
      * @return  an array of cards
      */
     private static ArrayList<Card> getCards(ArrayList<String> cardIds){
-        CardFetcher cardFetch = new CardFetcher();
+        CardFetcher fandom = new CardFetcher();
+        CardFetcherNew cardFetch = new CardFetcherNew();
         ArrayList<Card> cards = new ArrayList<>();
         for(String id : cardIds){
             if(!id.startsWith("!") && !id.startsWith(("#"))){
                 Card card = cardFetch.fetch(id);
                 if(card != null){
                     cards.add(card);
+                }
+                else{
+                    Card attempt2 = fandom.fetch(id);
+                    if(attempt2 != null){//will attempt to get the card from fandom
+                        cards.add(attempt2);
+                        System.out.println("Obtained card id: '" + id + "' from fandom");
+                    }
+                    else{
+                        Card attempt3 = fandom.fetchBySearch(id);
+                        if(attempt3 != null){//will attempt to get the card from fandom by searching
+                            cards.add(attempt3);
+                            System.out.println("Obtained card id: '" + id + "' from fandom search");
+                        }
+                        else{
+                            System.out.println("Could not obtain card Id: " + id);
+                        }
+                    }
                 }
             }
         }

@@ -23,18 +23,18 @@ import yugiohproxymaker.Card.CardType;
  *
  * @author Alan
  */
-public class CardFetcher {
-    private final String BASE_URL = "https://yugioh.fandom.com/wiki/";
+public class CardFetcherNew {
+    private final String BASE_URL = "https://yugipedia.com/wiki/";
     
     //add different image urls
     
-    private final String SEARCH_URL = "https://yugioh.fandom.com/wiki/Special:Search?query=";
+    private final String SEARCH_URL = "https://yugipedia.com/index.php?search=";
     
     private Document currentDoc;
     
     private HashMap<String, String> cardTableDetails;
     
-    public CardFetcher(){}
+    public CardFetcherNew(){}
     
     private Card fetch(String passcode, boolean search){
         currentDoc = null;
@@ -140,16 +140,21 @@ public class CardFetcher {
         }
         HashMap<String, String> cardDetails = new HashMap<>();
         
-        Elements cardTable = currentDoc.getElementsByClass("cardtable");
+        Elements cardTable = currentDoc
+                .getElementsByClass("card-table-columns").get(0)
+                .getElementsByClass("innertable");//find the table with the card details
         if(cardTable.isEmpty()){
             return null;
         }
-        Elements elements = cardTable.get(0).getElementsByClass("cardtablerowheader");
-        for(int i=0;i<elements.size();i++){
-            Element e = elements.get(i);
-            Element dataRow = e.parent().getElementsByClass("cardtablerowdata").get(0);
+        
+        Elements cardHeader = cardTable.get(0).getElementsByTag("th");//table headers
+        
+        for(int i=0;i<cardHeader.size();i++){
+            Element headerElement = cardHeader.get(i);
             
-            String header = e.text();
+            Element dataRow = headerElement.parent().getElementsByTag("td").get(0);
+            
+            String header = headerElement.text();
             String data = dataRow.text();
             
             cardDetails.put(header, data);
@@ -163,10 +168,7 @@ public class CardFetcher {
             return null;
         }
         
-        if(cardTableDetails != null){
-           return cardTableDetails.get("English"); 
-        }
-        return null;
+        return currentDoc.getElementsByClass("heading").get(0).text();
     }
     
     private String getCardType(){
@@ -353,65 +355,19 @@ public class CardFetcher {
         if(!doesCardExist()){
             return null;
         }
-        Elements cardtablerowElements = currentDoc.getElementsByClass("cardtablespanrow");
-        
-        Elements descriptionElements = null;
-        for(int i=0;i<cardtablerowElements.size();i++){
-            Element e = cardtablerowElements.get(i);
-            if(e.child(0).text().equals("Card descriptions")){
-                descriptionElements = e.getElementsByClass("navbox-title");
-                break;
-            }
+        Elements lore = currentDoc.select(".lore dl");
+        if(lore.isEmpty()){
+            lore = currentDoc.select(".lore p");
         }
-        
-        if(descriptionElements == null){
-            return null;
+        else{
+            lore = lore.get(0).children();
         }
-        for(int i=0;i<descriptionElements.size();i++){
-            Element e = descriptionElements.get(i);
-            if(e.text().equals("English")){
-                Element data = e.parent().parent().getElementsByClass("navbox-list").get(0);
-                String s = br2nl(data.html());
-                String[] descriptions = s.split("\n");
-                return descriptions;
-            }
+        String[] description = new String[lore.size()];
+        for(int i=0;i<lore.size();i++){
+            Element e = lore.get(i);
+            description[i] = e.text();
         }
-        return null;
-    }
-    
-    /**
-     * //converts all of the <br> and <p> with new lines (\\n)
-     * @param html  the html that needs to be parsed
-     * @return  a fully parse html
-     */
-    public static String br2nl(String html) {
-        if (html == null) {
-            return html;
-        }
-        Document document = Jsoup.parse(html);
-        document.outputSettings(new Document.OutputSettings().prettyPrint(false));//makes html() preserve linebreaks and spacing
-        document.select("br").append("\\n");
-        document.select("p").prepend("\\n\\n");
-        
-        Elements ddElements = document.select("dd");
-        
-        for(Element e : ddElements){
-            TextNode text = new TextNode(e.text());
-            e.replaceWith(text);
-        }
-        
-        
-//        Elements dtElements = document.select("dl");
-//        for(Element e : dtElements){
-//            TextNode text = new TextNode(e.text());
-//            e.replaceWith(text);
-//        }
-        
-        
-        String s = document.html().replaceAll("\\\\n", "\n");
-//        System.out.println(s);
-        
-        return Jsoup.clean(s, "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
+        return description;
     }
     
     /**
@@ -422,8 +378,8 @@ public class CardFetcher {
         if(!doesCardExist()){
             return null;
         }
-        Elements elements = currentDoc.getElementsByClass("cardtable-cardimage");
-        String url = elements.get(0).getElementsByTag("a").get(0).attr("href");
+        Elements elements = currentDoc.select(".cardtable-main_image-wrapper img");
+        String url = elements.get(0).attr("src");
         return url;
     }
     
@@ -461,7 +417,7 @@ public class CardFetcher {
             String url = SEARCH_URL + passcode;
             currentDoc = Jsoup.connect(url).get();
             
-            Elements results = currentDoc.select("li.unified-search__result a");
+            Elements results = currentDoc.select(".mw-search-results a");
             if(!results.isEmpty()){
                 String cardUrl = results.get(0).attr("href");
                 currentDoc = Jsoup.connect(cardUrl).get();

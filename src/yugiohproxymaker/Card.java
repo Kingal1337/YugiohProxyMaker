@@ -292,7 +292,7 @@ public class Card {
     public String toString(){
         StringBuilder builder = new StringBuilder();
         builder.append("Name : ").append(name).append("\n");
-        builder.append("Description : ").append(description).append("\n");
+        builder.append("Description : ").append(Arrays.toString(description)).append("\n");
         builder.append("Passcode : ").append(passcode).append("\n");
         builder.append("Card Type : ").append(cardType).append("\n");
         builder.append("Attribute : ").append(attribute).append("\n");
